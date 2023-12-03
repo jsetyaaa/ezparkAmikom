@@ -1,3 +1,50 @@
+<?php
+
+include '../process/koneksi.php';
+
+session_start(); // Memulai sesi
+
+// Cek apakah pengguna belum login, jika iya, redirect ke login
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ../page/index.php');
+    exit();
+}
+
+// Ambil user data dari database berdasarkan user_id dari session
+$user_id = $_SESSION['user_id'];
+
+// Query untuk mendapatkan data user berdasarkan user_id
+$query = "SELECT username FROM user WHERE user_id = '$user_id'";
+$result = mysqli_query($koneksi, $query);
+
+if ($result) {
+    $user = mysqli_fetch_assoc($result);
+    $username = $user['username'];
+} else {
+    // Handle kesalahan query
+    echo "Error: " . mysqli_error($koneksi);
+    exit();
+}
+
+// Query untuk mendapatkan data user dan lokasi parkir berdasarkan user_id
+$query = "SELECT u.username, p.name_parking, p.space_id, p.check_in_time FROM user u
+          LEFT JOIN parking_spaces p ON u.user_id = p.user_id
+          WHERE u.user_id = '$user_id'";
+$result = mysqli_query($koneksi, $query);
+
+if ($result) {
+    $data = mysqli_fetch_assoc($result);
+    $username = $data['username'];
+    $nameParking = $data['name_parking'];
+    $spaceId = $data['space_id'];
+    $checkInTime = $data['check_in_time'];
+} else {
+    // Handle kesalahan query
+    echo "Error: " . mysqli_error($koneksi);
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,84 +53,126 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>EZPark Amikom</title>
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link rel="stylesheet" href="../src/output.css" />
 
 
 </head>
 
 <body>
-    <header>
-        <h2 class="text-font-color font-bold text-3xl mt-16 sm:flex sm:justify-center ml-8 sm:ml-0">EZPark AMIKOM</h2>
-    </header>
+    <div class="container">
+        <header>
+            <h2 class="mt-16 ml-8 text-3xl font-bold text-font-color sm:flex sm:justify-center sm:ml-0">EZPark AMIKOM
+            </h2>
+        </header>
 
-    <div class="container p-4 md:flex md:justify-center">
-        <div class="bg-main-color rounded-3xl mt-16 flex h-28 items-center justify-between sm:justify-center sm:gap-40 md:w-1/2">
-            <div>
-                <h4 class="ml-4 font-bold text-font-color">Halo, username</h4>
-                <p class="ml-4 text-font-color">Welcome to EZPark</p>
+        <div class="container p-4 md:flex md:justify-center">
+            <div
+                class="flex items-center justify-between mt-16 bg-main-color rounded-3xl h-28 sm:justify-center sm:gap-40 md:w-1/2">
+                <div>
+                    <h4 class="ml-4 font-bold text-font-color">Halo, <?php echo $username; ?></h4>
+                    <p class="ml-4 text-font-color">Welcome to EZPark</p>
+                </div>
             </div>
-            <div>
-                <img src="../img/icon-park.png" alt="logos" class="h-12 rounded-full mr-4">
+        </div>
+
+        <div class="swiper mySwiper h-32 mt-16">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide flex justify-center items-center">
+                    <div class="w-64 text-center bg-main-color rounded-3xl h-32">Slide 1
+                    </div>
+                </div>
+                <div class="swiper-slide flex justify-center items-center">
+                    <div class="w-64 text-center bg-main-color rounded-3xl h-32">Slide 2
+                    </div>
+                </div>
+                <div class="swiper-slide flex justify-center items-center">
+                    <div class="w-64 text-center bg-main-color rounded-3xl h-32">Slide 3
+                    </div>
+                </div>
+                <div class="swiper-slide flex justify-center items-center">
+                    <div class="w-64 text-center bg-main-color rounded-3xl h-32">Slide 4
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-
-    <div id="sliderContainer" class="mt-16 h-32 grid grid-flow-col scroll-smooth overflow-y-auto overscroll-x-contain snap-x gap-4 px-8">
-        <div class="bg-main-color w-64 text-center rounded-3xl snap-center">Slide 1
-        </div>
-        <div class="bg-main-color w-64 text-center rounded-3xl snap-center">Slide 2
-        </div>
-        <div class="bg-main-color w-64 text-center rounded-3xl snap-center">Slide 3
-        </div>
-        <div class="bg-main-color w-64 text-center rounded-3xl snap-center">Slide 4
-        </div>
-        <div class="bg-main-color w-64 text-center rounded-3xl snap-center">Slide 5
-        </div>
-        <div class="bg-main-color w-64 text-center rounded-3xl snap-center">Slide 6
-        </div>
-    </div>
-
-    <div>
-        <h2 class="text-font-color font-bold text-3xl mt-16 sm:flex sm:justify-center ml-8">Menu</h2>
-    </div>
-
-    <div class="mt-8 flex justify-evenly mb-32">
-        <div class="text-center">
-            <div class="bg-main-color w-20 h-20 rounded-lg flex justify-center items-center">
-                <img src="../img/qr-code.svg" alt="qr-code">
-            </div>
-            <h4 class="text-font-color font-semibold mt-4">Parkir</h4>
-        </div>
-        <div class="text-center">
-            <div class="bg-main-color w-20 h-20 rounded-lg flex justify-center items-center">
-                <img src="../img/printer.svg" alt="printer">
-            </div>
-            <h4 class="text-font-color font-semibold mt-4">Cetak Karcis</h4>
-        </div>
-        <div class="text-center">
-            <div class="bg-main-color w-20 h-20 rounded-lg flex justify-center items-center">
-                <img src="../img/kalender.svg" alt="kalender">
-            </div>
-            <h4 class="text-font-color font-semibold mt-4">Booking</h4>
+            <div class="swiper-pagination"></div>
         </div>
 
-    </div>
+        <div>
+            <h2 class="mt-16 ml-8 text-3xl font-bold text-font-color sm:flex sm:justify-center">Menu</h2>
+        </div>
 
-    <nav class="w-full bottom-0 fixed">
-        <div class="flex">
-            <button class="w-full h-20 bg-button-color text-white font-bold text-xl flex flex-col justify-center items-center pt-2">
-                <img src="../img/home.svg" alt="home" class="mb-2">
-                <h2>Beranda</h2>
-            </button>
-            <button class="w-full h-20 bg-main-color text-white font-bold text-xl flex flex-col justify-center items-center pt-2">
-                <a href="../page/profil.php">
-                    <img src="../img/user.svg" alt="user" class="mb-2 mx-auto">
-                    <h2>Profil</h2>
+        <div class="flex mt-8 mb-8 justify-evenly">
+            <div class="text-center">
+                <a href="../page/inputPlat.php">
+                    <div class="flex items-center justify-center w-20 h-20 rounded-lg bg-main-color">
+                        <img src="../img/park.png" alt="qr-code">
+                    </div>
                 </a>
-            </button>
-        </div>
-    </nav>
+                <h4 class="mt-4 font-semibold text-font-color">Parkir</h4>
+            </div>
+            <div class="text-center">
+                <div class="flex items-center justify-center w-20 h-20 rounded-lg bg-main-color">
+                    <img src="../img/printer.svg" alt="printer">
+                </div>
+                <h4 class="mt-4 font-semibold text-font-color">Lihat Karcis</h4>
+            </div>
+            <div class="text-center">
+                <div class="flex items-center justify-center w-20 h-20 rounded-lg bg-main-color">
+                    <img src="../img/kalender.svg" alt="kalender">
+                </div>
+                <h4 class="mt-4 font-semibold text-font-color">Booking</h4>
+            </div>
 
+        </div>
+
+        <div class="p-12 mb-6 flex flex-col text-center">
+            <h2 class="font-bold text-font-color text-2xl mb-4">Lokasi Parkir</h2>
+            <p>Nama: <?php echo $nameParking; ?></p>
+            <p>Space: <?php echo $spaceId; ?></p>
+            <p>Masuk pada: <?php echo $checkInTime; ?></p>
+        </div>
+
+        <div class="flex justify-center items-center mb-32">
+            <a href="../page/inputPlatOut.php"><button class="w-64 h-20 bg-red-600 rounded-2xl text-white font-bold">
+                    Keluar Area
+                </button></a>
+        </div>
+
+        <nav class="fixed bottom-0 w-full">
+            <div class="flex">
+                <button
+                    class="flex flex-col items-center justify-center w-full h-20 pt-2 text-xl font-bold text-white bg-button-color">
+                    <img src="../img/home.svg" alt="home" class="mb-2">
+                    <h2>Beranda</h2>
+                </button>
+                <button
+                    class="flex flex-col items-center justify-center w-full h-20 pt-2 text-xl font-bold text-white bg-main-color">
+                    <a href="../page/profil.php">
+                        <img src="../img/user.svg" alt="user" class="mx-auto mb-2">
+                        <h2>Profil</h2>
+                    </a>
+                </button>
+            </div>
+        </nav>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <!-- Initialize Swiper -->
+    <script>
+    var swiper = new Swiper(".mySwiper", {
+        spaceBetween: 30,
+        centeredSlides: true,
+        autoplay: {
+            delay: 2500,
+            disableOnInteraction: false,
+        },
+        pagination: {
+            el: ".swiper-pagination",
+            clickable: true,
+        },
+    });
+    </script>
 </body>
 
 </html>

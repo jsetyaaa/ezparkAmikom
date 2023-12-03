@@ -1,6 +1,8 @@
 <?php
-
 include '../process/koneksi.php';
+
+// Mulai session
+session_start();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Tangkap data dari form
@@ -8,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'];
 
     // Query untuk memeriksa kredensial pengguna
-    $query = "SELECT * FROM users WHERE username = '$username'";
+    $query = "SELECT * FROM user WHERE username = '$username'";
     $result = mysqli_query($koneksi, $query);
 
     if ($result) {
@@ -17,14 +19,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Memeriksa apakah password cocok
         if ($user && password_verify($password, $user['password'])) {
             // Menyimpan ID pengguna ke sesi
-            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['user_id'] = $user['user_id'];
 
             // Redirect ke dashboard.php
             header('Location: ../page/dashboard.php');
             exit();
         } else {
             // Handle jika kredensial tidak cocok
-            echo "Kombinasi username/NIM dan password tidak valid.";
+            echo "<script>
+                    var errorMessage = 'Kombinasi username dan password tidak valid.';
+                    alert(errorMessage);
+                    window.location.href = '../page/index.php';
+                </script>";
         }
     } else {
         // Handle kesalahan query
