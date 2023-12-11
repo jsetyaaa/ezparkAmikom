@@ -112,15 +112,19 @@ if ($result) {
                 <h4 class="mt-4 font-semibold text-font-color">Parkir</h4>
             </div>
             <div class="text-center">
-                <div class="flex items-center justify-center w-20 h-20 rounded-lg bg-main-color">
-                    <img src="../img/printer.svg" alt="printer">
-                </div>
-                <h4 class="mt-4 font-semibold text-font-color">Lihat Karcis</h4>
+                <a href="../page/detailParkir.php">
+                    <div class="flex items-center justify-center w-20 h-20 rounded-lg bg-main-color">
+                        <img src="../img/detail.png" alt="printer">
+                    </div>
+                </a>
+                <h4 class="mt-4 font-semibold text-font-color">Detail Karcis</h4>
             </div>
             <div class="text-center">
-                <div class="flex items-center justify-center w-20 h-20 rounded-lg bg-main-color">
-                    <img src="../img/kalender.svg" alt="kalender">
-                </div>
+                <a href="../page/booking.php">
+                    <div class="flex items-center justify-center w-20 h-20 rounded-lg bg-main-color">
+                        <img src="../img/kalender.svg" alt="kalender">
+                    </div>
+                </a>
                 <h4 class="mt-4 font-semibold text-font-color">Booking</h4>
             </div>
 
